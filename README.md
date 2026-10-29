@@ -231,3 +231,4 @@ Ties are broken by (distance, id) on both CPU and GPU so results are comparable.
 - NVIDIA cuVS: GPU vector search library (IVF-PQ), used as the baseline.
 # VecKern
 # VecKern
+# VecKern
