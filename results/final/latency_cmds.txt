@@ -1,0 +1,3 @@
+./build/veckern_bench --n 10000000 --m 16 --nq 1 --k 10 --variants v4,v6,v7,v8 --eval-queries 0 --cpu-queries 0 --reps 20 --label latency_nq1 --csv results/final/latency.csv
+./build/veckern_bench --n 10000000 --m 16 --nq 10 --k 10 --variants v4,v6,v7,v8 --eval-queries 0 --cpu-queries 0 --reps 20 --label latency_nq10 --csv results/final/latency.csv
+./build/veckern_bench --n 10000000 --m 16 --nq 100 --k 10 --variants v4,v6,v7,v8 --eval-queries 0 --cpu-queries 0 --reps 20 --label latency_nq100 --csv results/final/latency.csv

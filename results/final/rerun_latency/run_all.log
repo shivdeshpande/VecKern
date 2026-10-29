@@ -1,0 +1,47 @@
+=== 2026-10-11 21:09:53 rerun of 3 commands
++ start=1791752993 ./build/veckern_bench --n 10000000 --m 16 --nq 1 --k 10 --variants v4,v6,v7,v8 --eval-queries 0 --cpu-queries 0 --reps 20 --label latency_nq1 --csv results/final/latency.csv
+[wait_idle_gpu] GPU 0 idle for 60s at 2026-10-11 21:10:54 epoch=1791753054; running: ./build/veckern_bench --n 10000000 --m 16 --nq 1 --k 10 --variants v4,v6,v7,v8 --eval-queries 0 --cpu-queries 0 --reps 20 --label latency_nq1 --csv results/final/latency.csv
+data: n=10000000 d=128 nq=1 (6.4 s) | PQ m=16 (16 B/vector, 32x compression) | k=10
+PQ train+encode: 30.4 s
+GPU: NVIDIA A100 80GB PCIe, 108 SMs, 1935 GB/s theoretical DRAM peak
+
+variant                T    bx    gy  Q ILP waves   lut ms  scan ms   sel ms  xfer ms  total ms        QPS code GB/s  recall
+v4_fused             128   864     1  1   1  0.00     0.01     0.86     0.18     0.02      1.07        936     186.9  -1.000
+v6_fused_vec         128   743     1  1   4  0.98     0.01     0.26     0.17     0.02      0.47       2136     610.4  -1.000
+v7_fused_vec_mq      128   430     1  2   4  1.00     0.01     0.33     0.11     0.02      0.46       2164     489.8  -1.000
+v8_fused_warp        256   430     1  2   4  1.00     0.01     0.29     0.12     0.02      0.44       2277     550.2  -1.000
+code GB/s = logical PQ code bytes per query x queries / scan time (CPU row: whole search).
+It counts L2 hits and shared reads (v7 loads each code once per Q queries); use Nsight Compute for DRAM bytes.
+appended 4 rows to results/final/latency.csv
++ end=1791753092
++ start=1791753092 ./build/veckern_bench --n 10000000 --m 16 --nq 10 --k 10 --variants v4,v6,v7,v8 --eval-queries 0 --cpu-queries 0 --reps 20 --label latency_nq10 --csv results/final/latency.csv
+[wait_idle_gpu] GPU 0 idle for 60s at 2026-10-11 21:12:34 epoch=1791753154; running: ./build/veckern_bench --n 10000000 --m 16 --nq 10 --k 10 --variants v4,v6,v7,v8 --eval-queries 0 --cpu-queries 0 --reps 20 --label latency_nq10 --csv results/final/latency.csv
+data: n=10000000 d=128 nq=10 (5.5 s) | PQ m=16 (16 B/vector, 32x compression) | k=10
+PQ train+encode: 29.7 s
+GPU: NVIDIA A100 80GB PCIe, 108 SMs, 1935 GB/s theoretical DRAM peak
+
+variant                T    bx    gy  Q ILP waves   lut ms  scan ms   sel ms  xfer ms  total ms        QPS code GB/s  recall
+v4_fused             128    87    10  1   1  0.00     0.01     4.58     0.05     0.03      4.67       2142     349.3  -1.000
+v6_fused_vec         128    75    10  1   4  0.99     0.01     1.81     0.04     0.03      1.89       5299     883.3  -1.000
+v7_fused_vec_mq      128    85     5  2   4  0.98     0.01     1.53     0.04     0.02      1.61       6224    1046.6  -1.000
+v8_fused_warp        256    85     5  2   4  0.98     0.01     1.23     0.04     0.02      1.31       7652    1301.0  -1.000
+code GB/s = logical PQ code bytes per query x queries / scan time (CPU row: whole search).
+It counts L2 hits and shared reads (v7 loads each code once per Q queries); use Nsight Compute for DRAM bytes.
+appended 4 rows to results/final/latency.csv
++ end=1791753191
++ start=1791753191 ./build/veckern_bench --n 10000000 --m 16 --nq 100 --k 10 --variants v4,v6,v7,v8 --eval-queries 0 --cpu-queries 0 --reps 20 --label latency_nq100 --csv results/final/latency.csv
+[wait_idle_gpu] GPU 0 idle for 60s at 2026-10-11 21:14:14 epoch=1791753254; running: ./build/veckern_bench --n 10000000 --m 16 --nq 100 --k 10 --variants v4,v6,v7,v8 --eval-queries 0 --cpu-queries 0 --reps 20 --label latency_nq100 --csv results/final/latency.csv
+data: n=10000000 d=128 nq=100 (5.0 s) | PQ m=16 (16 B/vector, 32x compression) | k=10
+PQ train+encode: 15.5 s
+GPU: NVIDIA A100 80GB PCIe, 108 SMs, 1935 GB/s theoretical DRAM peak
+
+variant                T    bx    gy  Q ILP waves   lut ms  scan ms   sel ms  xfer ms  total ms        QPS code GB/s  recall
+v4_fused             128     9   100  1   1  0.00     0.01    22.45     0.03     0.03     22.52       4440     712.9  -1.000
+v6_fused_vec         128    15   100  1   4  1.98     0.01    13.00     0.02     0.03     13.07       7652    1230.8  -1.000
+v7_fused_vec_mq      128    17    50  2   4  1.97     0.01    11.62     0.03     0.03     11.68       8558    1377.4  -1.000
+v8_fused_warp        256    17    50  2   4  1.97     0.01    11.23     0.03     0.03     11.30       8851    1425.0  -1.000
+code GB/s = logical PQ code bytes per query x queries / scan time (CPU row: whole search).
+It counts L2 hits and shared reads (v7 loads each code once per Q queries); use Nsight Compute for DRAM bytes.
+appended 4 rows to results/final/latency.csv
++ end=1791753276
+=== 2026-10-11 21:14:36 done

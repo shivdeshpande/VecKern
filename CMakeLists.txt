@@ -1,0 +1,67 @@
+cmake_minimum_required(VERSION 3.22)
+project(veckern LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+option(VECKERN_ENABLE_CUDA "Build the CUDA kernels when a CUDA compiler is found" ON)
+
+# ---- CPU reference (always built; the source of truth for correctness)
+add_library(veckern_cpu src/cpu/io.cpp src/cpu/pq.cpp src/cpu/cpu_ref.cpp)
+target_include_directories(veckern_cpu PUBLIC include)
+target_compile_options(veckern_cpu PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -Wno-unknown-pragmas>)
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+  target_link_libraries(veckern_cpu PUBLIC OpenMP::OpenMP_CXX)
+else()
+  message(STATUS "OpenMP not found: CPU reference runs single-threaded")
+endif()
+
+# ---- CUDA kernels (optional)
+set(VECKERN_HAS_CUDA OFF)
+if(VECKERN_ENABLE_CUDA)
+  include(CheckLanguage)
+  check_language(CUDA)
+  if(CMAKE_CUDA_COMPILER)
+    # Must be set before enable_language(CUDA), which otherwise picks an old default architecture.
+    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+      if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+        set(CMAKE_CUDA_ARCHITECTURES native)  # override e.g. -DCMAKE_CUDA_ARCHITECTURES="80;90"
+      else()
+        set(CMAKE_CUDA_ARCHITECTURES 80)      # A100; pass -DCMAKE_CUDA_ARCHITECTURES for other GPUs
+      endif()
+    endif()
+    enable_language(CUDA)
+    set(VECKERN_HAS_CUDA ON)
+  else()
+    message(STATUS "No CUDA compiler found: building the CPU reference only")
+  endif()
+endif()
+
+if(VECKERN_HAS_CUDA)
+  set(CMAKE_CUDA_STANDARD 17)
+  set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+  add_library(veckern_gpu src/cuda/searcher.cu)
+  target_link_libraries(veckern_gpu PUBLIC veckern_cpu)
+  target_compile_options(veckern_gpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr -lineinfo>)
+  target_compile_definitions(veckern_gpu PUBLIC VECKERN_HAS_CUDA)
+endif()
+
+# ---- benchmark
+add_executable(veckern_bench bench/bench_main.cpp)
+target_link_libraries(veckern_bench PRIVATE $<IF:$<BOOL:${VECKERN_HAS_CUDA}>,veckern_gpu,veckern_cpu>)
+
+# ---- tests
+enable_testing()
+add_executable(test_cpu tests/test_cpu.cpp)
+target_link_libraries(test_cpu PRIVATE veckern_cpu)
+add_test(NAME cpu_reference COMMAND test_cpu)
+if(VECKERN_HAS_CUDA)
+  add_executable(test_gpu tests/test_gpu.cpp)
+  target_link_libraries(test_gpu PRIVATE veckern_gpu)
+  add_test(NAME gpu_kernels COMMAND test_gpu)
+endif()

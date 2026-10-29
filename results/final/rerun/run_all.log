@@ -1,0 +1,41 @@
+=== 2026-10-11 20:41:47 rerun of 2 commands
++ start=1791751307 ./build/veckern_bench --base /mnt/hdd_volume2/cs24mtech12017_500GB/data/sift-1M/sift_base.fvecs --query /mnt/hdd_volume2/cs24mtech12017_500GB/data/sift-1M/sift_query.fvecs --gt /mnt/hdd_volume2/cs24mtech12017_500GB/data/sift-1M/sift_groundtruth.ivecs --m 64 --nq 10000 --k 10 --eval-queries 1000 --cpu-queries 1000 --reps 5 --label sift1m_m64 --csv results/final/sift1m.csv
+[wait_idle_gpu] GPU 0 idle for 60s at 2026-10-11 20:42:48 epoch=1791751368; running: ./build/veckern_bench --base /mnt/hdd_volume2/cs24mtech12017_500GB/data/sift-1M/sift_base.fvecs --query /mnt/hdd_volume2/cs24mtech12017_500GB/data/sift-1M/sift_query.fvecs --gt /mnt/hdd_volume2/cs24mtech12017_500GB/data/sift-1M/sift_groundtruth.ivecs --m 64 --nq 10000 --k 10 --eval-queries 1000 --cpu-queries 1000 --reps 5 --label sift1m_m64 --csv results/final/sift1m.csv
+data: n=1000000 d=128 nq=10000 (0.5 s) | PQ m=64 (64 B/vector, 8x compression) | k=10
+PQ train+encode: 32.5 s
+GPU: NVIDIA A100 80GB PCIe, 108 SMs, 1935 GB/s theoretical DRAM peak
+
+variant                T    bx    gy  Q ILP waves   lut ms  scan ms   sel ms  xfer ms  total ms        QPS code GB/s  recall
+cpu_reference          0     0     0  1   1  0.00     0.00     0.00     0.00     0.00   2482.42        403      25.8   0.875
+v0_global_lut        256    11    84  1   1  0.00     2.31  3099.07   703.88     6.31   3810.54       2624     206.5   0.875
+v1_shared_lut        256    11    84  1   1  0.00     2.37  2612.25   703.50     5.85   3323.73       3009     245.0   0.875
+v2_shared_lut_vec    256    11    84  1   1  0.00     2.42   568.74   703.46     5.61   1280.14       7812    1125.3   0.875
+v3_interleaved       256    11    84  1   1  0.00     2.39   878.30   703.36     5.33   1588.93       6294     728.7   0.875
+v4_fused             128     1 10000  1   1  0.00     1.19  1171.31     0.51     0.80   1173.82       8519     546.4   0.875
+v5_fused_reg         128     1 10000  1   1 46.30     1.19  2913.46     0.54     1.06   2916.24       3429     219.7   0.875
+v6_fused_vec         128     1 10000  1   4 46.30     1.20   915.66     0.51     1.25    918.52      10887     699.0   0.875
+v7_fused_vec_mq      128     1  5000  2   4 46.30     1.19   582.03     0.51     0.78    584.53      17108    1099.6   0.875
+v8_fused_warp        256     1  5000  2   4 46.30     1.20   442.98     0.51     1.68    446.27      22408    1444.7   0.875
+code GB/s = logical PQ code bytes per query x queries / scan time (CPU row: whole search).
+It counts L2 hits and shared reads (v7 loads each code once per Q queries); use Nsight Compute for DRAM bytes.
+appended 10 rows to results/final/sift1m.csv
++ end=1791751501
++ start=1791751501 ./build/veckern_bench --n 100000000 --m 16 --nq 1000 --k 10 --variants v4,v5,v6,v7,v8 --eval-queries 100 --cpu-queries 10 --reps 5 --label synthetic_n100000000 --csv results/final/scaling.csv
+[wait_idle_gpu] GPU 1 idle for 60s at 2026-10-11 20:58:38 epoch=1791752318; running: ./build/veckern_bench --n 100000000 --m 16 --nq 1000 --k 10 --variants v4,v5,v6,v7,v8 --eval-queries 100 --cpu-queries 10 --reps 5 --label synthetic_n100000000 --csv results/final/scaling.csv
+data: n=100000000 d=128 nq=1000 (48.4 s) | PQ m=16 (16 B/vector, 32x compression) | k=10
+PQ train+encode: 133.8 s
+exact ground truth (100 queries): 86.7 s
+GPU: NVIDIA A100 80GB PCIe, 108 SMs, 1935 GB/s theoretical DRAM peak
+
+variant                T    bx    gy  Q ILP waves   lut ms  scan ms   sel ms  xfer ms  total ms        QPS code GB/s  recall
+cpu_reference          0     0     0  1   1  0.00     0.00     0.00     0.00     0.00   2283.69          4       7.0  -1.000
+v4_fused             128     1  1000  1   1  0.00     0.08  2129.72     0.10     0.16   2130.07        469     751.3   0.232
+v5_fused_reg         128    27  1000  1   1 27.78     0.08  2611.03     0.16     0.16   2611.43        383     612.8   0.232
+v6_fused_vec         128     3  1000  1   4  3.97     0.08  1291.90     0.12     0.17   1292.26        774    1238.5   0.232
+v7_fused_vec_mq      128     6   500  2   4  6.94     0.08  1105.83     0.12     0.15   1106.18        904    1446.9   0.232
+v8_fused_warp        256     6   500  2   4  6.94     0.08  1105.66     0.12     0.14   1106.01        904    1447.1   0.232
+code GB/s = logical PQ code bytes per query x queries / scan time (CPU row: whole search).
+It counts L2 hits and shared reads (v7 loads each code once per Q queries); use Nsight Compute for DRAM bytes.
+appended 6 rows to results/final/scaling.csv
++ end=1791752645
+=== 2026-10-11 21:04:05 done

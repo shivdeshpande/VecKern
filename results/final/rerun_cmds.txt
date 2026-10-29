@@ -1,0 +1,2 @@
+./build/veckern_bench --base /mnt/hdd_volume2/cs24mtech12017_500GB/data/sift-1M/sift_base.fvecs --query /mnt/hdd_volume2/cs24mtech12017_500GB/data/sift-1M/sift_query.fvecs --gt /mnt/hdd_volume2/cs24mtech12017_500GB/data/sift-1M/sift_groundtruth.ivecs --m 64 --nq 10000 --k 10 --eval-queries 1000 --cpu-queries 1000 --reps 5 --label sift1m_m64 --csv results/final/sift1m.csv
+./build/veckern_bench --n 100000000 --m 16 --nq 1000 --k 10 --variants v4,v5,v6,v7,v8 --eval-queries 100 --cpu-queries 10 --reps 5 --label synthetic_n100000000 --csv results/final/scaling.csv

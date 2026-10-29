@@ -1,0 +1,10 @@
+build/
+profiles/
+plots/
+*.nsys-rep
+*.ncu-rep
+.DS_Store
+__pycache__/
+# pipeline tests on a shared GPU: not valid results
+results/rehearsal_contended/
+results/quick/
