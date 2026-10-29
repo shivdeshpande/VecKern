@@ -230,3 +230,4 @@ Ties are broken by (distance, id) on both CPU and GPU so results are comparable.
 - K. Ootomo et al. *CAGRA: Highly Parallel Graph Construction and Approximate Nearest Neighbor Search for GPUs.* ICDE 2024.
 - NVIDIA cuVS: GPU vector search library (IVF-PQ), used as the baseline.
 # VecKern
+# VecKern
